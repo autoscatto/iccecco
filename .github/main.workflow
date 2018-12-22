@@ -5,4 +5,5 @@ workflow "Test Workflow" {
 
 action "./action-mvn" {
   uses = "./action-mvn"
+  args = "mvn test"
 }
