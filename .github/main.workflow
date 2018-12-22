@@ -1,8 +1,9 @@
 workflow "Test Workflow" {
   on = "push"
-  resolves = ["./action-mvn"]
+  resolves = ["GitHub Action for Apache Mmaven"]
 }
 
-action "./action-mvn" {
+action "GitHub Action for Apache Mmaven" {
   uses = "./action-mvn"
+  runs = "mvn test"
 }
