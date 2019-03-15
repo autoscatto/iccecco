@@ -91,4 +91,13 @@
       <url>https://api.bintray.com/maven/${server.username}/${server.reponame}/${project.artifactId}/;publish=1</url>
     </repository>
   </distributionManagement>
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-plugin-plugin</artifactId>
+        <version>3.6.0</version>
+      </plugin>
+    </plugins>
+  </reporting>
 </project>

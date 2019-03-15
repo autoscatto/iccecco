@@ -16,11 +16,13 @@ import java.util.regex.Pattern;
 import static java.util.stream.Collectors.toList;
 
 class InterpolationException extends MojoExecutionException {
-    public InterpolationException(Object source, String shortMessage, String longMessage) {
-        super(shortMessage);
-        super.source = source;
-        super.longMessage = longMessage;
-    }
+  private static final long serialVersionUID = -4302598888724149575L;
+  public InterpolationException(Object source, String shortMessage,
+                                String longMessage) {
+    super(shortMessage);
+    super.source = source;
+    super.longMessage = longMessage;
+  }
     public InterpolationException(String message) {
         super(message);
     }
@@ -28,18 +30,47 @@ class InterpolationException extends MojoExecutionException {
 
 
 @Mojo(name = "validate-interpolation")
-public class MyMojo
-    extends AbstractMojo
-{
+/**
+ * Verifies that the files do not contain non-interpolated variables
+ *
+ * @phase package
+ */
+public class Iccecco extends AbstractMojo {    
+    @Parameter(property = "onlyWarn")
+    /**
+     * Don't stop process only emit warn (default: null)
+     * @parameter 
+    */
+    private String onlyWarn;
     @Parameter(property = "interpolDirs", defaultValue = "conf")
+    /**
+     * Interopolation dir (default: conf)
+     * @parameter
+    */
     private String interpolDirs;
     @Parameter(property = "encoding", defaultValue = "UTF-8")
+    /**
+     * File encoding (default: UTF-8)
+     * @parameter
+    */
     private String encoding;
     @Parameter(property = "includeFiles", defaultValue = ".*")
+    /**
+     * File include regex filter (default: .*)
+     * @parameter
+    */
     private String includeFiles;
     @Parameter(property = "excludeFiles")
+    /**
+     * File exclude regex filter (default: null)
+     * @parameter
+    */
     private String excludeFiles;
-    @Parameter(property = "basePath", defaultValue = "${project.build.directory}/docroot")
+    @Parameter(property = "basePath", defaultValue = "${project.build.directory}")
+    /**
+     * InterpolDirs base directory (default: ${project.build.directory})
+     * @parameter
+    */
     private String basePath;
     public void execute() // phase package goal run
         throws MojoExecutionException
@@ -47,14 +78,15 @@ public class MyMojo
         Charset ENCODING = Charset.forName(encoding);
         Pattern regexp = Pattern.compile("\\$\\{[^\\}]+\\}");
         Matcher matcher = regexp.matcher("");
-
+        getLog().debug(String.format("I'm checking '%s' dir, under '%s' including '%s' excluding '%s'", 
+        interpolDirs, basePath, includeFiles, excludeFiles));
         for (String dir: interpolDirs.split(",")){
             Path p = Paths.get(basePath, dir);
             try {
                 List<Path> filesToCheck = Files.walk(p)
                         .filter(s -> Files.isRegularFile(s))
-                        .filter(s -> s.toString().matches(includeFiles))
-                        .filter(s -> (excludeFiles == null) || !s.toString().matches(excludeFiles))
+                        .filter(s -> s.getFileName().toString().matches(includeFiles))
+                        .filter(s -> (excludeFiles == null) || !s.getFileName().toString().matches(excludeFiles))
                         .sorted()
                         .collect(toList());
                 for (Path path: filesToCheck){
@@ -66,7 +98,8 @@ public class MyMojo
                             matcher.reset(line); //reset the input
                             if (matcher.find()) {
                                 String msg = String.format("[%s:%d] %s", path.toString(),lineReader.getLineNumber(), line );
-                                throw new InterpolationException(msg);
+                                if (onlyWarn != null ) getLog().warn(msg);
+                                else throw new InterpolationException(msg);
                             }
                         }
                     }
