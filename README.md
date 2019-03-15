@@ -4,7 +4,7 @@ Interpolation Checker Maven plugin
 
 | Badges |
 | ------------- |
-| [![Build Status](https://travis-ci.org/autoscatto/iccecco.svg?branch=feature/ci)](https://travis-ci.org/autoscatto/iccecco) |
+| [![Build Status](https://travis-ci.org/autoscatto/iccecco.svg?branch=develop)](https://travis-ci.org/autoscatto/iccecco) |
 | [![Download](https://api.bintray.com/packages/autoscatto/githubbo/iccecco/images/download.svg)](https://bintray.com/autoscatto/githubbo/iccecco/_latestVersion)  |
 
 
